@@ -678,3 +678,51 @@ void DekoCompiler::OutputTgsi(const char* tgsiFile)
 		fclose(f);
 	}
 }
+
+void DekoCompiler::OutputDkshToMemory(void *mem) {
+	auto pa256 = [](uint8_t *p) {
+		return (uint8_t *)(((uintptr_t)p + 255) & ~255);
+	};
+
+	uint8_t *output = static_cast<uint8_t *>(mem);
+
+	*(DkshHeader *)output = {
+		.magic        = DKSH_MAGIC,
+		.header_sz    = sizeof(DkshHeader),
+		.control_sz   = Align256(sizeof(DkshHeader) + sizeof(DkshProgramHeader)),
+		.code_sz      = Align256((m_stage != pipeline_stage_compute ? 0x80 : 0x00) + m_codeSize) + Align256(m_dataSize),
+		.programs_off = sizeof(DkshHeader),
+		.num_programs = 1,
+	};
+	output += sizeof(DkshHeader);
+
+	*(DkshProgramHeader *)output = m_dkph;
+	output = pa256(output + sizeof(DkshProgramHeader));
+
+	output += s_shaderStartOffset;
+	*(NvShaderHeader *)output = m_nvsh;
+	output += sizeof(NvShaderHeader);
+
+	memcpy(output, m_code, m_codeSize);
+	output = pa256(output + m_codeSize);
+
+	if (m_dataSize) {
+		memcpy(output, m_data, m_dataSize);
+		output = pa256(output + m_dataSize);
+	}
+}
+
+size_t DekoCompiler::CalculateDkshSize() {
+	auto a256 = [](size_t size) {
+		return (size + 255) & ~255;
+	};
+
+	size_t sz = a256(sizeof(DkshHeader) + sizeof(DkshProgramHeader));
+
+	sz += a256((m_stage != pipeline_stage_compute ? 0x80 : 0x00) + m_codeSize);
+
+	if (m_dataSize)
+		sz += a256(m_dataSize);
+
+	return sz;
+}

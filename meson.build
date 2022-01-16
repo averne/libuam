@@ -74,13 +74,19 @@ endforeach
 
 uam_files = []
 uam_incs = []
+uam_install_headers = []
 
 subdir('source')
 subdir('mesa-imported')
 
-uam = executable(
+install_headers(uam_install_headers, subdir: 'libuam')
+
+uamlib = static_library(
 	'uam',
 	uam_files,
 	include_directories: uam_incs,
 	install: true,
 )
+
+pkgcfg = import('pkgconfig')
+pkgcfg.generate(uamlib)
