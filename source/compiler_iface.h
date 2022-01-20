@@ -42,6 +42,6 @@ public:
 	void OutputRawCode(const char* rawFile);
 	void OutputTgsi(const char* tgsiFile);
 
-	void OutputDkshToMemory(void *mem);
-	size_t CalculateDkshSize();
+	void OutputDkshToMemory(void *mem) const;
+	size_t CalculateDkshSize() const;
 };

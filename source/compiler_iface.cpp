@@ -679,7 +679,7 @@ void DekoCompiler::OutputTgsi(const char* tgsiFile)
 	}
 }
 
-void DekoCompiler::OutputDkshToMemory(void *mem) {
+void DekoCompiler::OutputDkshToMemory(void *mem) const {
 	auto pa256 = [](uint8_t *p) {
 		return (uint8_t *)(((uintptr_t)p + 255) & ~255);
 	};
@@ -712,7 +712,7 @@ void DekoCompiler::OutputDkshToMemory(void *mem) {
 	}
 }
 
-size_t DekoCompiler::CalculateDkshSize() {
+size_t DekoCompiler::CalculateDkshSize() const {
 	auto a256 = [](size_t size) {
 		return (size + 255) & ~255;
 	};

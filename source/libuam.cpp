@@ -20,28 +20,26 @@ inline pipeline_stage map_pipeline_stage(DkStage stage) {
     }
 }
 
-bool uam_compile_dksh(const char *glsl, DkStage stage, void **out, size_t *out_size) {
-    *out = NULL, *out_size = 0;
-
-    if (!glsl || !out)
-        return false;
-
+uam_compiler *uam_create_compiler(DkStage stage) {
     auto pstage = map_pipeline_stage(stage);
     if (pstage == static_cast<pipeline_stage>(-1))
-        return false;
+        return NULL;
 
-    auto compiler = DekoCompiler(pstage);
-    if (!compiler.CompileGlsl(glsl))
-        return false;
+    return reinterpret_cast<uam_compiler *>(new DekoCompiler(pstage));
+}
 
-    size_t dksh_size = compiler.CalculateDkshSize();
-    *out = aligned_alloc(0x100, dksh_size);
-    if (!*out)
-        return false;
-    *out_size = dksh_size;
+void uam_free_compiler(uam_compiler *compiler) {
+    delete reinterpret_cast<DekoCompiler *>(compiler);
+}
 
-    memset(*out, 0, dksh_size);
-    compiler.OutputDkshToMemory(*out);
+bool uam_compile_dksh(uam_compiler *compiler, const char *glsl) {
+    return reinterpret_cast<DekoCompiler *>(compiler)->CompileGlsl(glsl);
+}
 
-    return true;
+size_t uam_get_code_size(const uam_compiler *compiler) {
+    return reinterpret_cast<const DekoCompiler *>(compiler)->CalculateDkshSize();
+}
+
+void uam_write_code(const uam_compiler *compiler, void *memory) {
+    reinterpret_cast<const DekoCompiler *>(compiler)->OutputDkshToMemory(memory);
 }

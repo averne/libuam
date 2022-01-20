@@ -23,10 +23,22 @@ typedef enum DkStage
 } DkStage;
 #endif
 
-// Will handle memory allocation
-// "out" value should be freed after use
+typedef void *uam_compiler;
+
+// Creates/destroys compiler
+// Returns NULL on failure
+uam_compiler *uam_create_compiler(DkStage stage);
+void uam_free_compiler(uam_compiler *compiler);
+
+// Compiles the GLSL codes
 // Returns true on success, false otherwise
-bool uam_compile_dksh(const char *glsl, DkStage stage, void **out, size_t *out_size);
+bool uam_compile_dksh(uam_compiler *compiler, const char *glsl);
+
+// Gets the size of the previously compiled shader, as DKSH file
+size_t uam_get_code_size(const uam_compiler *compiler);
+
+// Write the compiled shader as DKSH to the specified location
+void uam_write_code(const uam_compiler *compiler, void *memory);
 
 #ifdef __cplusplus
 }
