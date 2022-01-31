@@ -699,9 +699,11 @@ void DekoCompiler::OutputDkshToMemory(void *mem) const {
 	*(DkshProgramHeader *)output = m_dkph;
 	output = pa256(output + sizeof(DkshProgramHeader));
 
-	output += s_shaderStartOffset;
-	*(NvShaderHeader *)output = m_nvsh;
-	output += sizeof(NvShaderHeader);
+	if (m_stage != pipeline_stage_compute) {
+		output += s_shaderStartOffset;
+		*(NvShaderHeader *)output = m_nvsh;
+		output += sizeof(NvShaderHeader);
+	}
 
 	memcpy(output, m_code, m_codeSize);
 	output = pa256(output + m_codeSize);
