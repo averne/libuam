@@ -25,6 +25,9 @@ typedef enum DkStage
 
 typedef void *uam_compiler;
 
+void uam_get_version(int *major, int *minor, int *micro);
+int uam_get_version_nb(void);
+
 // Creates/destroys compiler
 // Returns NULL on failure
 uam_compiler *uam_create_compiler(DkStage stage);

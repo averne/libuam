@@ -23,8 +23,10 @@ prog_bison = find_program('bison', native: true)
 prog_flex = find_program('flex', native: true)
 
 pre_args = [
+	'-DUAM_VERSION_MAJOR=@0@'.format(meson.project_version().split('.')[0]),
+	'-DUAM_VERSION_MINOR=@0@'.format(meson.project_version().split('.')[1]),
+	'-DUAM_VERSION_MICRO=@0@'.format(meson.project_version().split('.')[2]),
 	'-DPACKAGE_STRING="@0@ @1@"'.format(meson.project_name(), meson.project_version()),
-	'-DDESKTOP',
 	'-D_USE_MATH_DEFINES',
 ]
 

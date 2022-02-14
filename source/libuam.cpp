@@ -1,6 +1,19 @@
 #include "libuam.h"
 #include "compiler_iface.h"
 
+void uam_get_version(int *major, int *minor, int *micro) {
+    if (major)
+        *major = UAM_VERSION_MAJOR;
+    if (minor)
+        *minor = UAM_VERSION_MINOR;
+    if (micro)
+        *micro = UAM_VERSION_MICRO;
+}
+
+int uam_get_version_nb() {
+    return (UAM_VERSION_MAJOR << 16) | (UAM_VERSION_MINOR << 8) | (UAM_VERSION_MICRO << 0);
+}
+
 inline pipeline_stage map_pipeline_stage(DkStage stage) {
     switch (stage) {
         case DkStage_Vertex:
